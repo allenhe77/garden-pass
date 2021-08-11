@@ -1,14 +1,23 @@
 const express = require('express')
+const https = require('https');
+const fs = require('fs');
+
 const app = express()
 const port = 3117
 const {generateToken,decodeToken,generateUUID} = require('./utils')
 const {insertInto,activateToken} = require('./mongodb')
 
-// console.log(token)
-// console.log(decodeToken(token))
+const options = {
+	key: fs.readFileSync('/etc/letsencrypt/live/auth.effysurreal.codes/privkey.pem'),
+	cert: fs.readFileSync('/etc/letsencrypt/live/auth.effysurreal.codes/fullchain.pem')
+  };
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello Worldasdsd!')
+})
+
+app.get('/auth/haha',(req,res) => {
+	res.send("auth haha!!")
 })
 
 app.get('/auth/gen',async(req,res) => {
@@ -34,7 +43,4 @@ app.get('/activate',(req,res) => {
 
 
 
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`)
-})
-
+https.createServer(options,app).listen(port);
