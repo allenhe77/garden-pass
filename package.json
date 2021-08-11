@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"deploy": "pm2 restart garden",
+	"test": "NODE_ENV=$(grep PM2_SERVER_NAME .env | cut -d '=' -f2) && pm2 restart $NODE_ENV",
+	"update": "echo renjiaxuan | sudo -S apt update"
   },
   "keywords": [],
   "author": "",
