@@ -4,19 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-	"deploy": "pm2 restart garden",
-	"test": "NODE_ENV=$(grep PM2_SERVER_NAME .env | cut -d '=' -f2) && pm2 restart $NODE_ENV",
-	"update": "echo renjiaxuan | sudo -S apt update"
+    "test": "NODE_ENV=$(grep PM2_SERVER_NAME .env | cut -d '=' -f2) && pm2 restart $NODE_ENV",
+    "deploy": "pm2 restart garden",
+    "update": "echo renjiaxuan | sudo -S apt update",
+    "log": "pm2 logs garden"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.1.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0"
   }
 }
