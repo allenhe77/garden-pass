@@ -1,3 +1,6 @@
+
+// note: jwt time is in seconds
+
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()

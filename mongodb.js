@@ -58,6 +58,13 @@ const activateToken = async (uuid)=>{
 		await client.connect()
 		const db = client.db('test')
 		const collection = db.collection('users')
+		const activatedOrNot = await collection.findOne({
+			uuid
+		})
+		console.log("activated?",activatedOrNot)
+		if (activatedOrNot.activated){
+			return "already"
+		}
 		const newValue = {
 			$set:{
 				activated:true
@@ -72,5 +79,25 @@ const activateToken = async (uuid)=>{
 	return result
 }
 
+const checkTokenValidity = async (token) => {
+
+	let result
+	try{
+		await client.connect()
+		const db = client.db('test')
+		const collection = db.collection('users')
+		result= await collection.findOne({
+			token
+		})
+	
+	}finally{
+		await client.close()
+	}
+
+	return result
+
+	
+}
+exports.checkTokenValidity=checkTokenValidity
 exports.insertInto=insertInto
 exports.activateToken=activateToken

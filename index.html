@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+	<input type="text" id="token" style="display: none" value="">
+	Loasdgin!
+	<script>
+	
+		const getCookieValue = (name) => (
+	document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+  )
+
+		const token = getCookieValue('hey')
+
+		if (token === ""){
+			window.location.href = "https://auth.effysurreal.codes/newform";
+			return 
+		}
+	
+
+		const check = async() => {
+			const jsonData = {
+				token: token
+			}
+
+			
+
+			let result = await fetch('https://auth.effysurreal.codes/auth/check',{
+				method:'post',
+				headers:{
+					'Content-Type':'application/json'
+				},
+				body:JSON.stringify(jsonData)
+			})
+
+			result = await result.json()
+			console.log(result)
+			if (result.msg === 'valid'){
+				window.location.href = "https://auth.effysurreal.codes/validated";
+			}else if(result.msg === 'failed'){
+				window.location.href = "https://auth.effysurreal.codes/newform";
+			}
+		}
+
+		check()
+		
+
+		
+
+  		console.log(getCookieValue('hey'))
+	</script>
+</body>
+</html>

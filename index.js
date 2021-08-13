@@ -4,13 +4,18 @@ const fs = require('fs');
 const cors = require('cors')
 const morgan = require('morgan')
 const app = express()
+app.use('/login',express.static(__dirname + '/'));
+app.use('/test',express.static(__dirname + '/public'))
 app.use(morgan('tiny'))
 app.use(cors())
 app.use(express.json())
+// app.engine('html', require('ejs').renderFile);
+// app.set('view engine', 'html');
+// app.set('views', __dirname);
 
 const port = 3117
 const {generateToken,decodeToken,generateUUID} = require('./utils')
-const {insertInto,activateToken} = require('./mongodb')
+const {insertInto,activateToken,checkTokenValidity} = require('./mongodb')
 
 const options = {
 	key: fs.readFileSync('/etc/letsencrypt/live/auth.effysurreal.codes/privkey.pem'),
@@ -56,12 +61,67 @@ app.post('/auth/gen2',async(req,res) => {
 app.get('/auth/activate/:uuid',async(req,res) =>{
 	const uuid = req.params.uuid
 	const data = await activateToken(uuid)
-	console.log(data)
-	res.redirect('/activate')
+	if (data === "already"){
+		res.send("Link already used!")
+		return 
+	}
+	const token = data.token
+	// res.redirect('/activate')
+	
+	// res.set('Content-Type', 'text/html');
+	// const script = 'alert(' + txt + ')'
+	// const htmlStr = '<script>' + script + '</script>'
+	// res.end(htmlStr)
+	const cookirStr = `hey=${token}; domain=effysurreal.codes; Max-Age=2592000; path=/`
+	// const cookirStr2 = `credentials=${uuid}; domain=effysurreal.codes; Max-Age=2592000; path=/`
+	res.set('Set-Cookie',cookirStr)
+	// res.set('Set-Cookie',cookirStr2)
+	// res.render('index.html',{
+	// 	token:data.token
+	// })
+	res.send('helasdlo!')
 })
 
 app.get('/activate',(req,res) => {
 	res.send('Activate Success!')
+})
+
+
+app.post('/auth/check',async(req,res) => {
+	const token = req.body.token
+	const validityResult = await checkTokenValidity(token)
+	console.log('the result is: ', validityResult)
+	if  (validityResult === undefined){
+		console.log("token not found!")
+		
+	}else{
+		console.log("Token valid!")
+	}
+
+	const tokenDecoded = decodeToken(token)
+	console.log(tokenDecoded)
+	console.log(Date.now()/1000,tokenDecoded.exp)
+	if (Date.now()/1000  >= tokenDecoded.exp){
+		console.log("Token expired!")
+		res.json({
+			msg: 'failed'
+		})
+	}else{
+		console.log("Token still valid!")
+		res.json({
+			msg: 'valid'
+		})
+	}
+	
+	
+})
+
+app.get('/newform',(req,res) => {
+	res.send('New form! Please register!')
+})
+
+app.get('/validated',(req,res) => {
+	res.send("Validated! redirecting you to secret page!")
 })
 
 
